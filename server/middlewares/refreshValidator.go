@@ -10,43 +10,6 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func AccessValidator(c *gin.Context) {
-	header := c.GetHeader("Authorization")
-	if header == "" {
-		responses.Code401(c, "Missing authorization header")
-		c.Abort()
-		return
-	}
-
-	tokenString := strings.TrimPrefix(header, "Bearer")
-	if tokenString == "" {
-		responses.Code401(c, "Token is invalid or expired")
-	}
-
-	key, err := jwt_utils.ParsePublicKey()
-
-	if err != nil {
-		responses.Code500(c)
-		c.Abort()
-		return
-	}
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
-		}
-		return key, nil
-	})
-
-	if err != nil || !token.Valid {
-		responses.Code401(c, "Token is invalid or expired")
-		c.Abort()
-		return
-	}
-
-	c.Next()
-}
-
 func RefreshValidator(c *gin.Context) {
 	header := c.GetHeader("Authorization")
 	if header == "" {
@@ -55,12 +18,15 @@ func RefreshValidator(c *gin.Context) {
 		return
 	}
 
-	tokenString := strings.TrimPrefix(header, "Bearer")
+	tokenString := strings.TrimPrefix(header, "Bearer ")
 	if tokenString == "" {
+		fmt.Println("Trim")
 		responses.Code401(c, "Token is invalid or expired")
 		c.Abort()
 		return
 	}
+
+	fmt.Println(tokenString)
 
 	key, err := jwt_utils.ParsePublicKey()
 
@@ -78,6 +44,7 @@ func RefreshValidator(c *gin.Context) {
 	})
 
 	if err != nil || !token.Valid {
+		fmt.Println(err)
 		responses.Code401(c, "Token is invalid or expired")
 		c.Abort()
 		return

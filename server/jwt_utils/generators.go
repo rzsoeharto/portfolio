@@ -26,13 +26,15 @@ func GenerateAccessToken(c *gin.Context, data *models.User) (string, string) {
 		log.Fatal()
 	}
 
-	claims := jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		NotBefore: jwt.NewNumericDate(time.Now()),
-		Issuer:    "Service Backend",
-		Subject:   data.Username,
-		ID:        refid,
+	claims := models.CustomClaims{
+		ReferenceID: refid,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    "Service Backend",
+			Subject:   data.Username,
+		},
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)

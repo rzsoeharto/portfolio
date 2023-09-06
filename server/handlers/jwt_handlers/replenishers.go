@@ -24,6 +24,7 @@ func ReplenishToken(c *gin.Context, token *jwt.Token) {
 	defer db.Close()
 
 	acc, refID := jwt_utils.GenerateAccessToken(c, &user)
+
 	ref := jwt_utils.GenerateRefreshToken(c)
 
 	db.Exec(c, `INSERT INTO userpermissions (referenceID) VALUES ($2) WHERE username = $1`, &user.Username, &refID)
@@ -32,4 +33,5 @@ func ReplenishToken(c *gin.Context, token *jwt.Token) {
 		"accessToken":    acc,
 		"referenceToken": ref,
 	})
+
 }

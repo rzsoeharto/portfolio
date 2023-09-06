@@ -67,12 +67,14 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	per, err := db.Exec(c, `INSERT INTO permissions (referenceid, username, active) VALUES($1, $2, $3)`, &referenceID, &user.Username, true)
+	per, err := db.Exec(c, `UPDATE userpermissions
+	SET "referenceID" = $1, "active" = $2
+	WHERE "username" = $3;`, &referenceID, true, &user.Username)
 
 	fmt.Println(per)
 
 	if err != nil {
-		fmt.Println(scanErr)
+		fmt.Println(err)
 		responses.Code500(c)
 		return
 	}

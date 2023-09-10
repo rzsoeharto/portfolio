@@ -3,6 +3,7 @@ package middlewares
 import (
 	"fmt"
 	"portfolio/server/jwt_utils"
+	"portfolio/server/models"
 	"portfolio/server/responses"
 	"strings"
 
@@ -50,10 +51,14 @@ func RefreshValidator(c *gin.Context) {
 		return
 	}
 
-	sub, err := token.Claims.GetSubject()
+	claims := token.Claims.(*models.CustomRefreshClaims)
 
-	if err != nil {
-		fmt.Println(err)
+	sub, subErr := claims.GetSubject()
+	sid, sesErr := claims.GetSessionID()
+
+	if subErr != nil && sesErr != nil {
+		fmt.Println("sub", subErr)
+		fmt.Println("ses", sesErr)
 		responses.Code500(c)
 		c.Abort()
 		return
@@ -64,6 +69,8 @@ func RefreshValidator(c *gin.Context) {
 		c.Abort()
 		return
 	}
+
+	c.Set("Session ID", sid)
 
 	c.Next()
 }

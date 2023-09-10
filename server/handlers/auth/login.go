@@ -9,6 +9,7 @@ import (
 	"portfolio/server/models"
 	"portfolio/server/responses"
 	"portfolio/server/utils"
+	authutils "portfolio/server/utils/auth"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -32,7 +33,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if !utils.CheckIfUserExist(c, user.Username, db) {
+	if !authutils.CheckIfUserExist(c, user.Username, db) {
 		responses.Code404(c, "User does not exist")
 		return
 	}
@@ -54,8 +55,8 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	acc, referenceID := jwt_utils.GenerateAccessToken(c, &user)
-	ref := jwt_utils.GenerateRefreshToken(c)
+	acc, refID := jwt_utils.GenerateAccessToken(c, user.Username)
+	ref, sid := jwt_utils.GenerateRefreshToken(c)
 
 	data := db.QueryRow(c, `SELECT name FROM "users" where username = $1`, &user.Username)
 
@@ -69,7 +70,7 @@ func Login(c *gin.Context) {
 
 	per, err := db.Exec(c, `UPDATE userpermissions
 	SET "referenceID" = $1, "active" = $2
-	WHERE "username" = $3;`, &referenceID, true, &user.Username)
+	WHERE "username" = $3;`, &refID, true, &user.Username)
 
 	fmt.Println(per)
 
@@ -78,6 +79,16 @@ func Login(c *gin.Context) {
 		responses.Code500(c)
 		return
 	}
+
+	ses, err := db.Exec(c, `INSERT INTO sessions (session_id, username) VALUES($1, $2)`, &sid, &user.Username)
+
+	if err != nil {
+		fmt.Println(err)
+		responses.Code500(c)
+		return
+	}
+
+	fmt.Println(ses)
 
 	c.JSON(http.StatusOK, gin.H{
 		"username": user.Username,

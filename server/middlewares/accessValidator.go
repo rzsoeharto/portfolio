@@ -33,7 +33,7 @@ func AccessValidator(c *gin.Context) {
 		return
 	}
 
-	token, err := jwt.ParseWithClaims(tokenString, &models.CustomClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &models.CustomAccessClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -54,7 +54,7 @@ func AccessValidator(c *gin.Context) {
 		return
 	}
 
-	claims := token.Claims.(*models.CustomClaims)
+	claims := token.Claims.(*models.CustomAccessClaims)
 
 	ref, err := claims.GetReferenceID()
 

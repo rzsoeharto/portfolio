@@ -7,6 +7,7 @@ import (
 	"portfolio/server/models"
 	"portfolio/server/responses"
 	"portfolio/server/utils"
+	authutils "portfolio/server/utils/auth"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -29,7 +30,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	if utils.CheckIfUserExist(c, user.Username, db) {
+	if authutils.CheckIfUserExist(c, user.Username, db) {
 		responses.Code302(c, "Username is taken")
 		return
 	}

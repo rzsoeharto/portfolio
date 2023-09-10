@@ -12,7 +12,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateAccessToken(c *gin.Context, data *models.User) (string, string) {
+func GenerateAccessToken(c *gin.Context, uname string) (string, string) {
 	key, err := ParsePrivateKey()
 
 	if err != nil {
@@ -26,14 +26,14 @@ func GenerateAccessToken(c *gin.Context, data *models.User) (string, string) {
 		log.Fatal()
 	}
 
-	claims := models.CustomClaims{
+	claims := models.CustomAccessClaims{
 		ReferenceID: refid,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(1 * time.Hour)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "Service Backend",
-			Subject:   data.Username,
+			Subject:   uname,
 		},
 	}
 
@@ -49,20 +49,29 @@ func GenerateAccessToken(c *gin.Context, data *models.User) (string, string) {
 	return acc, refid
 }
 
-func GenerateRefreshToken(c *gin.Context) string {
+func GenerateRefreshToken(c *gin.Context) (string, string) {
 	key, err := ParsePrivateKey()
 
 	if err != nil {
 		fmt.Println("error parsing private key: %w", err)
-		return ""
+		return "", ""
 	}
 
-	claims := jwt.RegisteredClaims{
-		ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
-		IssuedAt:  jwt.NewNumericDate(time.Now()),
-		NotBefore: jwt.NewNumericDate(time.Now()),
-		Issuer:    "Service Backend",
-		Subject:   "Refresh",
+	sid, err := utils.GenerateReferenceID()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	claims := models.CustomRefreshClaims{
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			NotBefore: jwt.NewNumericDate(time.Now()),
+			Issuer:    "Service Backend",
+			Subject:   "Refresh",
+		},
+		SessionID: sid,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
@@ -74,5 +83,5 @@ func GenerateRefreshToken(c *gin.Context) string {
 		log.Fatal(err)
 	}
 
-	return ref
+	return ref, sid
 }

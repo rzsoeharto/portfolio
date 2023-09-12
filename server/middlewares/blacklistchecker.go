@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"log"
 	"portfolio/server/database"
 	"portfolio/server/responses"
 	"strings"
@@ -12,14 +11,7 @@ import (
 func CheckBlacklist(c *gin.Context) {
 	var count int
 
-	db, err := database.InitDB(c)
-
-	if err != nil {
-		log.Fatal("Connection to database failed", err)
-		responses.Code500(c)
-		c.Abort()
-		return
-	}
+	db := database.InitDB(c)
 
 	defer db.Close()
 

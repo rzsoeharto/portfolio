@@ -37,7 +37,7 @@ func RefreshValidator(c *gin.Context) {
 		return
 	}
 
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &models.CustomRefreshClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
@@ -69,7 +69,7 @@ func RefreshValidator(c *gin.Context) {
 		c.Abort()
 		return
 	}
-
+	c.Set("Refresh Token", tokenString)
 	c.Set("Session ID", sid)
 
 	c.Next()

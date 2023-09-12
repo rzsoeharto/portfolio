@@ -12,7 +12,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func GenerateAccessToken(c *gin.Context, uname string) (string, string) {
+func GenerateAccessToken(c *gin.Context) (string, string) {
 	key, err := ParsePrivateKey()
 
 	if err != nil {
@@ -33,7 +33,7 @@ func GenerateAccessToken(c *gin.Context, uname string) (string, string) {
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "Service Backend",
-			Subject:   uname,
+			Subject:   "Access",
 		},
 	}
 
@@ -64,6 +64,7 @@ func GenerateRefreshToken(c *gin.Context) (string, string) {
 	}
 
 	claims := models.CustomRefreshClaims{
+		SessionID: sid,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
@@ -71,7 +72,6 @@ func GenerateRefreshToken(c *gin.Context) (string, string) {
 			Issuer:    "Service Backend",
 			Subject:   "Refresh",
 		},
-		SessionID: sid,
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)

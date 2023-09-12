@@ -12,8 +12,8 @@ func (c CustomAccessClaims) GetReferenceID() (string, error) {
 }
 
 type CustomRefreshClaims struct {
-	jwt.RegisteredClaims
 	SessionID string `json:"sid"`
+	jwt.RegisteredClaims
 }
 
 func (c CustomRefreshClaims) GetSessionID() (string, error) {

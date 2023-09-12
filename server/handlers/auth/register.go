@@ -2,12 +2,10 @@ package auth
 
 import (
 	"fmt"
-	"log"
 	"portfolio/server/database"
 	"portfolio/server/models"
 	"portfolio/server/responses"
 	"portfolio/server/utils"
-	authutils "portfolio/server/utils/auth"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -16,13 +14,7 @@ import (
 func Register(c *gin.Context) {
 	var user models.User
 
-	db, err := database.InitDB(c)
-
-	if err != nil {
-		log.Fatal("Connection to database failed: ", err)
-		responses.Code500(c)
-		return
-	}
+	db := database.InitDB(c)
 
 	defer db.Close()
 
@@ -30,7 +22,7 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	if authutils.CheckIfUserExist(c, user.Username, db) {
+	if utils.CheckIfUserExist(c, user.Username, db) {
 		responses.Code302(c, "Username is taken")
 		return
 	}

@@ -3,20 +3,13 @@ package middlewares
 import (
 	"fmt"
 	"portfolio/server/database"
-	"portfolio/server/responses"
 
 	"github.com/gin-gonic/gin"
 )
 
 func PermissionCheck(c *gin.Context) {
 	var a map[string]interface{}
-	db, err := database.InitDB(c)
-
-	if err != nil {
-		fmt.Println(err)
-		responses.Code500(c)
-		c.Abort()
-	}
+	db := database.InitDB(c)
 
 	per := c.GetString("Permission")
 

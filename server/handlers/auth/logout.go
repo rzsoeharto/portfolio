@@ -23,13 +23,7 @@ func Logout(c *gin.Context) {
 		return
 	}
 
-	db, err := database.InitDB(c)
-
-	if err != nil {
-		fmt.Println(err)
-		responses.Code500(c)
-		return
-	}
+	db := database.InitDB(c)
 
 	defer db.Close()
 

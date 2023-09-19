@@ -5,6 +5,7 @@ import (
 	"encoding/base64"
 )
 
+// General Purpose String Generator
 func GenerateReferenceID() (string, error) {
 	randBytes := make([]byte, 16)
 

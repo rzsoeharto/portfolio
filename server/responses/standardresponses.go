@@ -13,6 +13,12 @@ func Code500(c *gin.Context) {
 	})
 }
 
+func Code500Message(c *gin.Context, msg string) {
+	c.JSON(http.StatusInternalServerError, gin.H{
+		"message": msg,
+	})
+}
+
 // ------------------------------------------------------- 400s
 func Code404(c *gin.Context, msg string) {
 	c.JSON(http.StatusNotFound, gin.H{

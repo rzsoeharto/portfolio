@@ -21,7 +21,11 @@ func Login(c *gin.Context) {
 
 	defer db.Close()
 
-	if !utils.BindJSON(c, &user) {
+	bindErr := c.BindJSON(&user)
+
+	if bindErr != nil {
+		fmt.Println(bindErr)
+		responses.Code400(c, "Incomplete fields or invalid data")
 		return
 	}
 
@@ -74,7 +78,6 @@ func Login(c *gin.Context) {
 
 	if sesErr != nil {
 		fmt.Println(sesErr)
-		fmt.Println("asdasdasd")
 		responses.Code500(c)
 		return
 	}

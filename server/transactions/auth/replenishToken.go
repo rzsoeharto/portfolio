@@ -35,14 +35,14 @@ func ReplenishTokenTx(c *gin.Context, db *pgxpool.Pool, tokenSID string, refid s
 		return err
 	}
 
-	_, err = tx.Exec(c, `INSERT INTO sessions (session_id) VALUES ($1)`, newSID)
+	_, err = tx.Exec(c, `UPDATE sessions set session_id = $1 WHERE username = $2`, newSID, uname)
 
 	if err != nil {
 		tx.Rollback(c)
 		return err
 	}
 
-	// Finish this. Please, future Rizky
+	// Double check before deployment
 	_, txErr1 := tx.Exec(c, `INSERT INTO blacklist (token) VALUES ($1)`, refToken)
 
 	if txErr1 != nil {

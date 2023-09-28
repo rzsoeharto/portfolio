@@ -7,6 +7,7 @@ type BlogPost struct {
 	Title     string
 	Author    string
 	Published time.Time
+	Updated   time.Time
 	Sections  []PostSection
 }
 

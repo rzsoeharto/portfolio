@@ -25,6 +25,8 @@ func RetrievePostByID(c *gin.Context) {
 		return
 	}
 
+	defer db.Close()
+
 	rows, err := db.Query(c, `SELECT id, blog_post_id, section_type, content FROM post_sections WHERE blog_post_id = $1`, id)
 
 	if err != nil {

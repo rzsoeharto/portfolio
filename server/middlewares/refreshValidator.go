@@ -27,8 +27,6 @@ func RefreshValidator(c *gin.Context) {
 		return
 	}
 
-	fmt.Println(tokenString)
-
 	key, err := jwt_utils.ParsePublicKey()
 
 	if err != nil {

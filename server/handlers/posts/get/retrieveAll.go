@@ -15,7 +15,9 @@ func RetrieveAll(c *gin.Context) {
 
 	db := database.InitDB(c)
 
-	rows, err := db.Query(c, `SELECT * FROM blog_posts`)
+	defer db.Close()
+
+	rows, err := db.Query(c, `SELECT id, title, author, published FROM blog_posts`)
 
 	if err != nil {
 		fmt.Println(err)
@@ -25,6 +27,12 @@ func RetrieveAll(c *gin.Context) {
 
 	for rows.Next() {
 		var post models.BlogPost
+
+		if err != nil {
+			fmt.Println(err)
+			responses.Code500(c)
+			return
+		}
 
 		if err := rows.Scan(&post.ID, &post.Title, &post.Author, &post.Published); err != nil {
 			fmt.Println(err)

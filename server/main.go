@@ -10,7 +10,9 @@ import (
 	"portfolio/server/initializers"
 	"portfolio/server/jwt_utils"
 	"portfolio/server/middlewares"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,9 +25,18 @@ func main() {
 
 	go jwt_utils.CleanUpTokens(&gin.Context{})
 
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     []string{"http://127.0.0.1:5173"},
+		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE"},
+		AllowHeaders:     []string{"Content-Type", "Content-Length", "Accept-Encoding", "Authorization", "Cache-Control"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	// GET Endpoints
 	r.GET("/post/:id", getposts.RetrievePostByID)
-	r.GET("/posts/", getposts.RetrieveAll)
+	r.GET("/posts", getposts.RetrieveAll)
 
 	//POST Endpoints
 	// -------------------------------------------- Auth endpoints ----------------------------------------

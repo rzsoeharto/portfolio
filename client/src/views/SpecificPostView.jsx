@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Logo from "../components/Logo";
 import Navbar from "../components/Navbar";
 import TitleNav from "../components/atomic/TitleNav";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import PostSection from "../components/PostSection";
 import useLogin from "../stores/useStore";
 import {
@@ -11,21 +11,50 @@ import {
   showToast,
   toastWithoutFade,
 } from "../utils/toastUtils";
+import Cookies from "js-cookie";
 
 function SpecificPostView() {
   const { isLoggedIn } = useLogin();
   const { postID } = useParams();
+  const navigate = useNavigate();
+
   const [post, setPost] = useState([]);
   const [sections, setSections] = useState([]);
 
   function handleDelete() {
-    console.log("ahjsbdhasbdhabsd");
+    const id = postID;
+    const acc = Cookies.get("Auth");
+    toastWithoutFade("Deleting post", "Loading");
+
+    fetch(`http://localhost:8080/delete-post`, {
+      method: "DELETE",
+      headers: {
+        Authorization: acc,
+      },
+      body: JSON.stringify({
+        ID: Number(id),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          closeToastWithoutFade();
+          showToast("Failed to delete post", "Warning");
+          return;
+        }
+        showToast("Post deleted", "Success");
+        navigate("/posts");
+      })
+      .catch((error) => {
+        closeToastWithoutFade();
+        console.log(error);
+        showToast("Unable to connect to server", "Warning");
+      });
   }
 
   useEffect(() => {
     toastWithoutFade("", "Loading");
     fetch(`http://localhost:8080/post/${postID}`)
-      .then((response) => response.json())
+      .then((res) => res.json())
       .then((data) => {
         setPost(data);
         setSections(data.Sections);

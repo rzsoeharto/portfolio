@@ -12,12 +12,18 @@ import useLogin from "./stores/useStore";
 import NewPostView from "./views/NewPostView";
 import PrivateRoute from "./components/PrivateRoute";
 import Toast from "./components/toast";
-import { showToast } from "./utils/toastUtils";
+import {
+  closeToast,
+  closeToastWithoutFade,
+  showToast,
+  toastWithoutFade,
+} from "./utils/toastUtils";
 
 function App() {
   const { setLoggedIn } = useLogin();
 
   function replenishToken() {
+    toastWithoutFade("Authenticating", "Loading");
     const refresh = Cookies.get("Ref");
 
     if (refresh == null || refresh === "null") {
@@ -47,16 +53,18 @@ function App() {
         Cookies.set("Ref", ref, { expires: 8 });
 
         setLoggedIn(true);
+        closeToast(1000);
       })
       .catch((error) => {
-        console.error("Error during token replenishment:", error);
-        // Handle any other potential errors, log them, or take appropriate action
+        closeToastWithoutFade();
+        error.log(error);
+        showToast("Error Authenticating", "Warning");
       });
   }
 
   useEffect(() => {
     replenishToken();
-    const intervalReplenish = setInterval(replenishToken, 3600000);
+    const intervalReplenish = setInterval(replenishToken, 3000000);
     return () => clearInterval(intervalReplenish);
   }, []);
 

@@ -25,13 +25,13 @@ function Confimation() {
             <div className="flex flex-row gap-5 place-content-end">
               <button
                 className="w-[180px] h-[50px] bg-red-500 hover:bg-white"
-                onClick={handleClose}
+                onClick{}
               >
                 Delete
               </button>
               <button
                 className="w-[80px] h-[50px] bg-[#ff8e3d] hover:bg-[#FFCCA8]  duration-100"
-                onClick={confirmLeave}
+                onClick={}
               >
                 Cancel
               </button>
@@ -81,5 +81,7 @@ function Confimation() {
     </>
   );
 }
+
+
 
 export default Confimation;

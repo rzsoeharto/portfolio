@@ -29,8 +29,11 @@ func ReplenishToken(c *gin.Context) {
 		return
 	}
 
+	c.Header("Authorization", "Bearer "+acc)
+
+	c.Header("Refresh-Token", "Refresh "+ref)
+
 	c.JSON(http.StatusOK, gin.H{
-		"accessToken":    acc,
-		"referenceToken": ref,
+		"Message": "All good",
 	})
 }

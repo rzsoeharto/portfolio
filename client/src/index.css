@@ -2,6 +2,19 @@
 @tailwind components;
 @tailwind utilities;
 
+.loader {
+  border: 8px solid rgba(231, 231, 231, 1);
+  border-bottom: 8px solid #ffa360;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+}
+
+.show {
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
 :root {
   font-family: poppins;
   line-height: 1.5;
@@ -18,9 +31,14 @@
   -webkit-text-size-adjust: 100%;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.CodeBlock[contenteditable]:empty::before {
+  content: "Write your code here";
+  color: gray;
+}
+
+.ParagraphBlock[contenteditable]:empty::before {
+  content: "Write your paragraph here";
+  color: gray;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,5 +57,49 @@ h1 {
 
   input {
     background-color: #e7e7e7;
+  }
+}
+
+@-webkit-keyframes fadein {
+  from {
+    bottom: 2%;
+    opacity: 0%;
+  }
+  to {
+    bottom: 0%;
+    opacity: 1;
+  }
+}
+
+@keyframes fadein {
+  from {
+    bottom: 2%;
+    opacity: 0%;
+  }
+  to {
+    bottom: 0%;
+    opacity: 1;
+  }
+}
+
+@-webkit-keyframes fadeout {
+  from {
+    bottom: 0%;
+    opacity: 1;
+  }
+  to {
+    bottom: 2%;
+    opacity: 0%;
+  }
+}
+
+@keyframes fadeout {
+  from {
+    bottom: 0%;
+    opacity: 1;
+  }
+  to {
+    bottom: 2%;
+    opacity: 0%;
   }
 }

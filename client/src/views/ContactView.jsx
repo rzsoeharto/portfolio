@@ -8,7 +8,7 @@ function ContactView() {
   return (
     <>
       <Logo />
-      <div className="flex flex-row h-full w-full">
+      <div className="flex flex-row">
         <Navbar />
         <div>
           <TitleNav string="Contact" />

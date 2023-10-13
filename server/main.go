@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"portfolio/server/handlers/auth"
 	handlers "portfolio/server/handlers/jwt_handlers"
 	delpost "portfolio/server/handlers/posts/delete"
@@ -9,6 +10,7 @@ import (
 	newpost "portfolio/server/handlers/posts/post"
 	"portfolio/server/initializers"
 	"portfolio/server/jwt_utils"
+	logger "portfolio/server/logs"
 	"portfolio/server/middlewares"
 	"time"
 
@@ -18,6 +20,7 @@ import (
 
 func init() {
 	initializers.LoadEnv()
+	logger.Init(os.Getenv("LOGFILE"))
 }
 
 func main() {
@@ -28,8 +31,8 @@ func main() {
 	r.Use(cors.New(cors.Config{
 		AllowOrigins:     []string{"http://127.0.0.1:5173"},
 		AllowMethods:     []string{"GET", "POST", "PATCH", "DELETE"},
-		AllowHeaders:     []string{"Content-Type", "Content-Length", "Accept-Encoding", "Authorization", "Cache-Control"},
-		ExposeHeaders:    []string{"Content-Length"},
+		AllowHeaders:     []string{"Content-Type", "Content-Length", "Accept-Encoding", "Authorization", "Cache-Control", "Refresh"},
+		ExposeHeaders:    []string{"Content-Length", "Authorization", "Refresh-Token"},
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))

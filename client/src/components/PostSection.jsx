@@ -31,7 +31,6 @@ function PostSection({ sectionData }) {
 }
 
 PostSection.propTypes = {
-  cond: PropTypes.string,
   sectionData: PropTypes.object,
 };
 

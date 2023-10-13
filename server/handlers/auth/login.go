@@ -5,12 +5,13 @@ import (
 	"net/http"
 	"portfolio/server/database"
 	"portfolio/server/jwt_utils"
+	logger "portfolio/server/logs"
 	"portfolio/server/models"
 	"portfolio/server/responses"
+	transactions "portfolio/server/transactions/auth"
 	"portfolio/server/utils"
 
 	"github.com/gin-gonic/gin"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func Login(c *gin.Context) {
@@ -20,6 +21,14 @@ func Login(c *gin.Context) {
 	db := database.InitDB(c)
 
 	defer db.Close()
+
+	tx, err := db.Begin(c)
+
+	if err != nil {
+		logger.Logger.Println("Error starting transaction:", err)
+		responses.Code500(c)
+		return
+	}
 
 	bindErr := c.BindJSON(&user)
 
@@ -34,58 +43,50 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	row := db.QueryRow(c, `SELECT password FROM "users" WHERE username = $1`, &user.Username)
+	passErr := transactions.ValidatePassword(c, tx, &dbUser, &user)
 
-	scanerr := row.Scan(&dbUser.Password)
-
-	if scanerr != nil {
-		fmt.Println(scanerr)
-		responses.Code500(c)
-		return
-	}
-
-	passerr := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
-
-	if passerr != nil {
-		responses.Code400(c, "wrong password")
+	if passErr != nil {
+		responses.Code404(c, "Incorrect username or password")
+		logger.Logger.Println("Error in password validation", passErr)
 		return
 	}
 
 	acc, refID := jwt_utils.GenerateAccessToken(c)
 	ref, sid := jwt_utils.GenerateRefreshToken(c)
 
-	data := db.QueryRow(c, `SELECT name FROM "users" where username = $1`, &user.Username)
+	usernameErr := transactions.FetchUsername(c, tx, &user)
 
-	scanErr := data.Scan(&user.Name)
-
-	if scanErr != nil {
-		fmt.Println(scanErr)
+	if usernameErr != nil {
+		fmt.Println("5")
+		logger.Logger.Println("Error fetching username", usernameErr)
 		responses.Code500(c)
 		return
 	}
 
-	_, perErr := db.Exec(c, `UPDATE userpermissions
-	SET "referenceID" = $1, "active" = $2
-	WHERE "username" = $3;`, &refID, true, &user.Username)
+	perErr := transactions.PermissionAndSession(c, tx, sid, refID, &user)
 
 	if perErr != nil {
-		fmt.Println(perErr)
+		fmt.Println("6")
 		responses.Code500(c)
+		logger.Logger.Println("Error updating permisions and session", perErr)
+		tx.Rollback(c)
 		return
 	}
 
-	_, sesErr := db.Exec(c, `INSERT INTO sessions (session_id, username) VALUES($1, $2)`, &sid, &user.Username)
+	commitErr := tx.Commit(c)
 
-	if sesErr != nil {
-		fmt.Println(sesErr)
+	if commitErr != nil {
+		logger.Logger.Fatal("Error committing: ", commitErr)
 		responses.Code500(c)
+		tx.Rollback(c)
 		return
 	}
+
+	c.Header("Authorization", "Bearer "+acc)
+	c.Header("Refresh-Token", "Refresh "+ref)
 
 	c.JSON(http.StatusOK, gin.H{
 		"username": user.Username,
 		"name":     user.Name,
-		"access":   acc,
-		"refresh":  ref,
 	})
 }

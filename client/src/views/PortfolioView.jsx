@@ -6,11 +6,11 @@ function PortfolioView() {
   return (
     <>
       <Logo />
-      <div className="flex flex-row h-full w-full">
+      <div className="flex flex-row">
         <Navbar />
-        <div className="flex flex-col">
+        <div className="flex flex-col w-[1000px]">
           <TitleNav string="Portfolio" />
-          <div className="w-4/6">
+          <div className="w-4/5">
             <p className="text-2xl">
               As of right now. This is website is the only thing I am proud to
               share. However, you can check out my{" "}

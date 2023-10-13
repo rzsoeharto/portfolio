@@ -1,3 +1,7 @@
 #root {
   height: 100vh;
 }
+
+#PostTitle::placeholder {
+  color: #5a5a5a;
+}

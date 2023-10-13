@@ -11,7 +11,7 @@ function TitleNav({ isLink, link, string }) {
           </p>
         </Link>
       ) : (
-        <p className="text-3xl font-semibold">{string}</p>
+        <p className="text-3xl w-auto font-semibold">{string}</p>
       )}
     </>
   );

@@ -1,8 +1,6 @@
 package transactions
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -15,7 +13,6 @@ func ReplenishTokenTx(c *gin.Context, db *pgxpool.Pool, tokenSID string, refid s
 	tx, err := db.Begin(c)
 
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 

@@ -38,8 +38,6 @@ func PermissionCheck(c *gin.Context) {
 
 	found := containString(a, target)
 
-	fmt.Println("String")
-
 	if !found {
 		fmt.Println("not found")
 		responses.Code401(c, "Unauthorised")

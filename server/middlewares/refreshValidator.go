@@ -3,6 +3,7 @@ package middlewares
 import (
 	"fmt"
 	"portfolio/server/jwt_utils"
+	logger "portfolio/server/logs"
 	"portfolio/server/models"
 	"portfolio/server/responses"
 	"strings"
@@ -19,9 +20,8 @@ func RefreshValidator(c *gin.Context) {
 		return
 	}
 
-	tokenString := strings.TrimPrefix(header, "Bearer ")
+	tokenString := strings.TrimPrefix(header, "Refresh ")
 	if tokenString == "" {
-		fmt.Println("Trim")
 		responses.Code401(c, "Token is invalid or expired")
 		c.Abort()
 		return
@@ -30,6 +30,7 @@ func RefreshValidator(c *gin.Context) {
 	key, err := jwt_utils.ParsePublicKey()
 
 	if err != nil {
+		logger.Logger.Println("Error parsing public key: ", err)
 		responses.Code500(c)
 		c.Abort()
 		return
@@ -43,7 +44,7 @@ func RefreshValidator(c *gin.Context) {
 	})
 
 	if err != nil || !token.Valid {
-		fmt.Println(err)
+		logger.Logger.Println("Error parsing token", err)
 		responses.Code401(c, "Token is invalid or expired")
 		c.Abort()
 		return
@@ -55,10 +56,9 @@ func RefreshValidator(c *gin.Context) {
 	sid, sesErr := claims.GetSessionID()
 
 	if subErr != nil && sesErr != nil {
-		fmt.Println("sub", subErr)
-		fmt.Println("ses", sesErr)
-		responses.Code500(c)
+		logger.Logger.Println("Error fetching subject: ", subErr, "Error fetching session: ", sesErr)
 		c.Abort()
+		responses.Code500(c)
 		return
 	}
 

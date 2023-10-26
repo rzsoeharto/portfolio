@@ -3,6 +3,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      colors: {
+        "not-black": "#303030",
+      },
       keyframes: {
         spin: {
           "0%": {

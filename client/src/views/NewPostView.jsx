@@ -5,14 +5,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import SectionSelection from "../components/SectionSelected";
 import AddSection from "../components/AddSection";
-import { modalStorage, postStorage } from "../stores/useStore";
-import Cookies from "js-cookie";
-import Toast from "../components/toast";
+import useLogin, { modalStorage } from "../stores/useStore";
 import { showToast, toastWithoutFade } from "../utils/toastUtils";
 
 function NewPostView() {
   const navigate = useNavigate();
-  const { titleData, setTitle, sectionsData, removeSection } = postStorage();
+  const { isLoggedIn } = useLogin();
+  const [titleData, setTitleData] = useState("");
+  const [sectionsData, setSectionsData] = useState([]);
   const { modalState, setModalState, setModalType } = modalStorage();
   const [sectionModal, setSectionModal] = useState(false);
 
@@ -26,17 +26,19 @@ function NewPostView() {
   }
 
   function onChange(e) {
-    setTitle(e.target.value);
+    setTitleData(e.target.value);
   }
 
-  function handleDelete(index) {
-    removeSection(index);
+  function handleDelete(id) {
+    setSectionsData((state) => {
+      const updatedSection = [...state];
+      updatedSection.splice(id, 1);
+      return updatedSection;
+    });
   }
 
   function submitPost() {
-    const access = Cookies.get("Auth");
-
-    if (!access) {
+    if (!isLoggedIn) {
       showToast("You are not logged in", "Warning");
       return;
     }
@@ -53,23 +55,22 @@ function NewPostView() {
 
     fetch("http://localhost:8080/create-post", {
       method: "POST",
+      credentials: "include",
       body: JSON.stringify({
         Title: titleData,
         Sections: sectionsData,
       }),
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: access,
-      },
     })
       .then((res) => {
+        console.log(res);
         if (!res.ok) {
           showToast("Something went wrong in the backend", "Warning");
           return;
         }
         id.className = id.className.replace("block ", "hidden show");
       })
-      .catch(() => {
+      .catch((error) => {
+        console.error(error);
         showToast("Unable to connect to server", "Warning");
         return;
       });
@@ -78,69 +79,74 @@ function NewPostView() {
   return (
     <>
       {modalState ? <Confirmation /> : <></>}
-      <Logo />
       <div className="flex flex-row">
-        <Toast />
         <Navbar />
-        <div className="flex flex-col w-[895.5px] gap-3 pb-10">
-          <div className="flex flex-row gap-5">
-            <input
-              id="Title"
-              onChange={onChange}
-              type="text"
-              placeholder="Title"
-              className="text-3xl text-[#303030] w-[740px] font-semibold focus:outline-none"
-            />
-            <button
-              onClick={CancelPost}
-              className="text-2xl duration-200 hover:text-[#FFA360] bg-transparent"
-            >
-              Cancel
-            </button>
-          </div>
-          <div className="flex flex-col w-[740px] gap-2">
-            <div className="flex flex-col gap-3">
-              {Array.isArray(sectionsData) &&
-                sectionsData.map((section, index) => (
-                  <div key={index} className="text-lg flex flex-row">
-                    <SectionSelection
-                      index={index}
-                      sectionSelection={section}
-                    />
-                    <button
-                      onClick={() => {
-                        handleDelete(index);
-                      }}
-                      className="font-bold bg-transparent h-10 w-14"
-                    >
-                      X
-                    </button>
-                  </div>
-                ))}
+        <div className="flex flex-col h-screen w-full">
+          <Logo />
+          <div className="flex flex-col w-full gap-3 pb-10">
+            <div className="flex flex-row gap-5">
+              <input
+                id="Title"
+                onChange={onChange}
+                type="text"
+                placeholder="Title"
+                className="text-3xl text-[#303030] w-[740px] font-semibold focus:outline-none"
+              />
+              <button
+                onClick={CancelPost}
+                className="text-2xl duration-200 hover:text-[#FFA360] bg-transparent"
+              >
+                Cancel
+              </button>
             </div>
-            <div className="flex flex-row gap">
-              {sectionModal ? (
-                <AddSection setSectionModal={setSectionModal} />
-              ) : (
-                <button
-                  onClick={() => {
-                    setSectionModal(true);
-                  }}
-                  className="bg-[#d9d9d9] h-16 text-xl w-full rounded hover:bg-white"
-                >
-                  + Add Section
-                </button>
-              )}
+            <div className="flex flex-col w-[740px] gap-2">
+              <div className="flex flex-col gap-3">
+                {Array.isArray(sectionsData) &&
+                  sectionsData.map((section, index) => (
+                    <div key={index} className="text-lg flex flex-row">
+                      <SectionSelection
+                        index={index}
+                        sectionSelection={section}
+                        setSectionsData={setSectionsData}
+                      />
+                      <button
+                        onClick={() => {
+                          handleDelete(index);
+                        }}
+                        className="font-bold bg-transparent h-10 w-14"
+                      >
+                        X
+                      </button>
+                    </div>
+                  ))}
+              </div>
+              <div className="flex flex-row gap">
+                {sectionModal ? (
+                  <AddSection
+                    setSectionModal={setSectionModal}
+                    setSectionsData={setSectionsData}
+                  />
+                ) : (
+                  <button
+                    onClick={() => {
+                      setSectionModal(true);
+                    }}
+                    className="bg-[#d9d9d9] h-[60px] text-xl w-full rounded hover:bg-white duration-200"
+                  >
+                    + Add Section
+                  </button>
+                )}
+              </div>
+              <button
+                className="h-[60px] bg-[#FFA360] text-xl font-semibold hover:bg-white duration-200"
+                onClick={submitPost}
+              >
+                Submit
+              </button>
+              <button className="" onClick={() => console.log(sectionsData)}>
+                log the thing
+              </button>
             </div>
-            <button
-              className="h-16 bg-[#FFA360] text-xl font-semibold hover:bg-white"
-              onClick={submitPost}
-            >
-              Submit
-            </button>
-            <button className="" onClick={() => console.log(sectionsData)}>
-              log the thing
-            </button>
           </div>
         </div>
       </div>

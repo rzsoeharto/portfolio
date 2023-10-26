@@ -2,8 +2,8 @@ package middlewares
 
 import (
 	"portfolio/server/database"
+	logger "portfolio/server/logs"
 	"portfolio/server/responses"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,29 +15,23 @@ func CheckBlacklist(c *gin.Context) {
 
 	defer db.Close()
 
-	header := c.GetHeader("Authorization")
+	refreshToken, cookieErr := c.Cookie("Refresh-Token")
 
-	if header == "" {
-		responses.Code401(c, "Missing authorization header")
+	if cookieErr != nil {
+		logger.Logger.Println("No cookie: ", cookieErr)
+		responses.Code401(c, "Missing refresh cookie")
 		c.Abort()
 		return
 	}
 
-	tokenString := strings.TrimPrefix(header, "Bearer ")
-
-	if tokenString == "" {
-		responses.Code401(c, "Missing authorization header")
-		c.Abort()
-		return
-	}
-
-	row := db.QueryRow(c, `SELECT COUNT(token) FROM blacklist WHERE token = $1`, tokenString)
+	row := db.QueryRow(c, `SELECT COUNT(token) FROM blacklist WHERE token = $1`, refreshToken)
 
 	row.Scan(&count)
 
 	if count > 0 {
 		responses.Code401(c, "Token is blacklisted")
 		c.Abort()
+		return
 	}
 
 	c.Next()

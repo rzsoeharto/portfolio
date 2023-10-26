@@ -37,6 +37,7 @@ export const postStorage = create((set) => ({
   updateSectionContent: (index, val) =>
     set((state) => {
       const updatedSections = [...state.sectionsData];
+      console.log(val);
       updatedSections[index] = { ...updatedSections[index], Content: val };
       return { sectionsData: updatedSections };
     }),

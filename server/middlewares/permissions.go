@@ -30,8 +30,9 @@ func PermissionCheck(c *gin.Context) {
 
 	if scanerr != nil {
 		fmt.Println(scanerr)
+		responses.Code500Message(c, "Database error")
 		c.Abort()
-		fmt.Println("scanerr")
+		return
 	}
 
 	target := "post"

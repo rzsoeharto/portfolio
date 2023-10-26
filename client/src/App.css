@@ -5,3 +5,7 @@
 #PostTitle::placeholder {
   color: #5a5a5a;
 }
+
+a {
+  width: max-content;
+}

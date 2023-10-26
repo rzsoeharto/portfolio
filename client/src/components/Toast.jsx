@@ -37,6 +37,11 @@ function Toast() {
       break;
 
     default:
+      type = (
+        <div className="flex flex-row bg-white drop-shadow-md gap-5 w-80 h-20 place-items-center absolute bottom-[2%] left-[0%] px-5 font-semibold">
+          <p className="text-lg">{toastMessage}</p>
+        </div>
+      );
       break;
   }
   return (

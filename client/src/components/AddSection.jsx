@@ -1,13 +1,13 @@
 import PropTypes from "prop-types";
-import { postStorage } from "../stores/useStore";
 
-function AddSection({ setSectionModal }) {
-  const { setSections } = postStorage();
-
+function AddSection({ setSectionModal, setSectionsData }) {
   function handleClick(e) {
-    setSections({
-      SectionType: e.target.value,
-    });
+    setSectionsData((prevState) => [
+      ...prevState,
+      {
+        SectionType: e.target.value,
+      },
+    ]);
     setSectionModal(false);
   }
 
@@ -50,6 +50,7 @@ function AddSection({ setSectionModal }) {
 
 AddSection.propTypes = {
   setSectionModal: PropTypes.func,
+  setSectionsData: PropTypes.func,
 };
 
 export default AddSection;

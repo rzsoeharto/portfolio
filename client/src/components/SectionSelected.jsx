@@ -1,12 +1,15 @@
 import PropTypes from "prop-types";
-import { postStorage } from "../stores/useStore";
 
 function SectionSelection({ index, sectionSelection }) {
-  const { updateSectionContent } = postStorage();
+  var uploadedImage = "";
 
   function handleChange(e) {
     sectionSelection.Content = e.target.textContent;
-    updateSectionContent(index, sectionSelection.Content);
+  }
+
+  async function handleFileChange(event) {
+    const file = event.target.files[0];
+    sectionSelection.Content = file;
   }
 
   let sectionType;
@@ -39,7 +42,9 @@ function SectionSelection({ index, sectionSelection }) {
             className="ParagraphBlock block w-full bg-white p-5 min-w-[740px] max-w-[740px] resize-y rounded focus:outline-none"
             type="file"
             placeholder="Upload an image"
+            onChange={handleFileChange}
           />
+          <img src={uploadedImage} alt="" />
         </>
       );
       break;
@@ -49,6 +54,7 @@ function SectionSelection({ index, sectionSelection }) {
         <>
           <label>Code</label>
           <span
+            key={index}
             type="text"
             role="textbox"
             className="CodeBlock block w-full bg-white p-5 min-w-[740px] max-w-[740px] resize-y rounded focus:outline-none"

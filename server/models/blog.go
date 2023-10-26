@@ -5,7 +5,6 @@ import "time"
 type BlogPost struct {
 	ID        int
 	Title     string
-	Author    string
 	Published time.Time
 	Updated   time.Time
 	Sections  []PostSection

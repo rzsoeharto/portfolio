@@ -1,6 +1,7 @@
 package posttx
 
 import (
+	"fmt"
 	"portfolio/server/models"
 	"portfolio/server/responses"
 
@@ -19,14 +20,18 @@ func NewPostTx(c *gin.Context, db *pgxpool.Pool, post *models.BlogPost) error {
 		return err
 	}
 
-	// Inserting blog_post
-	if blogErr := tx.QueryRow(c, `INSERT INTO blog_posts (title, author, published) VALUES ($1, $2, $3) RETURNING id`, post.Title, post.Author, post.Published).Scan(&post.ID); blogErr != nil {
+	// Insert to blog_post
+	if blogErr := tx.QueryRow(c, `INSERT INTO blog_posts (title, published) VALUES ($1, $2) RETURNING id`, post.Title, post.Published).Scan(&post.ID); blogErr != nil {
 		tx.Rollback(c)
 		return blogErr
 	}
 
-	// Inserting Post_Sections
+	// Insert to Post_Sections
 	for _, section := range sections {
+		fmt.Println(section)
+		if section.SectionType == "Image" {
+			fmt.Println(section.Content)
+		}
 		_, err := tx.Exec(c, `INSERT INTO post_sections (blog_post_id, section_type, content) VALUES ($1, $2, $3)`, post.ID, section.SectionType, section.Content)
 		if err != nil {
 			tx.Rollback(c)

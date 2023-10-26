@@ -1,47 +1,55 @@
 import Logo from "../components/Logo";
-import LinkedInIcon from "../assets/icons/LinkdIn.png";
-import EmailIcon from "../assets/icons/Email.png";
 import Navbar from "../components/Navbar";
 import TitleNav from "../components/atomic/TitleNav";
 
 function ContactView() {
   return (
     <>
-      <Logo />
-      <div className="flex flex-row">
+      <div className="flex flex-row h-full">
         <Navbar />
-        <div>
-          <TitleNav string="Contact" />
-          <div className="flex flex-row gap-3 pt-4">
-            <div className="flex flex-col gap-5">
-              <a href="https://www.linkedin.com/in/rizky-soeharto-aa33b0222/">
-                <img
-                  src={LinkedInIcon}
-                  alt="LinkedIn Icon"
-                  className="w-[32px] h-[32px]"
-                />
-              </a>
-              <a href="mailto:soehartorizky@gmail.com">
-                <img
-                  src={EmailIcon}
-                  alt="Mail Icon"
-                  className="w-[39px] h-[32px]"
-                />
-              </a>
-            </div>
-            <div className="flex flex-col gap-5">
-              <a
-                className="text-2xl font-semibold ml-3"
-                href="https://www.linkedin.com/in/rizky-soeharto-aa33b0222/"
-              >
-                LinkedIn
-              </a>
-              <a
-                className="text-2xl font-semibold ml-3"
-                href="mailto:soehartorizky@gmail.com"
-              >
-                soehartorizky@gmail.com
-              </a>
+        <div className="flex flex-col w-full">
+          <Logo />
+          <div>
+            <TitleNav string="Contact" />
+            <div className="flex flex-row gap-3 pt-4">
+              <div className="flex flex-col gap-5">
+                <a href="https://www.linkedin.com/in/rizky-soeharto-aa33b0222/">
+                  <svg
+                    width="39"
+                    height="39"
+                    viewBox="0 0 42 42"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="fill-not-black"
+                  >
+                    <path d="M37.3333 0C38.571 0 39.758 0.491665 40.6332 1.36683C41.5083 2.242 42 3.42899 42 4.66667V37.3333C42 38.571 41.5083 39.758 40.6332 40.6332C39.758 41.5083 38.571 42 37.3333 42H4.66667C3.42899 42 2.242 41.5083 1.36683 40.6332C0.491665 39.758 0 38.571 0 37.3333V4.66667C0 3.42899 0.491665 2.242 1.36683 1.36683C2.242 0.491665 3.42899 0 4.66667 0H37.3333ZM36.1667 36.1667V23.8C36.1667 21.7826 35.3652 19.8478 33.9387 18.4213C32.5122 16.9947 30.5774 16.1933 28.56 16.1933C26.5767 16.1933 24.2667 17.4067 23.1467 19.2267V16.6367H16.6367V36.1667H23.1467V24.6633C23.1467 22.8667 24.5933 21.3967 26.39 21.3967C27.2564 21.3967 28.0873 21.7408 28.6999 22.3535C29.3125 22.9661 29.6567 23.797 29.6567 24.6633V36.1667H36.1667ZM9.05333 12.9733C10.093 12.9733 11.09 12.5603 11.8252 11.8252C12.5603 11.09 12.9733 10.093 12.9733 9.05333C12.9733 6.88333 11.2233 5.11 9.05333 5.11C8.0075 5.11 7.00449 5.52546 6.26498 6.26498C5.52546 7.00449 5.11 8.0075 5.11 9.05333C5.11 11.2233 6.88333 12.9733 9.05333 12.9733ZM12.2967 36.1667V16.6367H5.83333V36.1667H12.2967Z" />
+                  </svg>
+                </a>
+                <a href="mailto:soehartorizky@gmail.com">
+                  <svg
+                    width="39"
+                    height="32"
+                    viewBox="0 0 40 32"
+                    className="fill-not-black"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M36 0H4C1.8 0 0.02 1.8 0.02 4L0 28C0 30.2 1.8 32 4 32H36C38.2 32 40 30.2 40 28V4C40 1.8 38.2 0 36 0ZM35.2 8.5L21.06 17.34C20.42 17.74 19.58 17.74 18.94 17.34L4.8 8.5C4.59945 8.38742 4.42384 8.23532 4.28378 8.05291C4.14372 7.87049 4.04212 7.66156 3.98515 7.43874C3.92818 7.21593 3.91701 6.98387 3.95231 6.75661C3.98762 6.52936 4.06867 6.31163 4.19056 6.1166C4.31245 5.92158 4.47265 5.75331 4.66145 5.62199C4.85026 5.49067 5.06374 5.39902 5.28899 5.3526C5.51424 5.30617 5.74657 5.30593 5.97191 5.3519C6.19725 5.39786 6.41093 5.48907 6.6 5.62L20 14L33.4 5.62C33.5891 5.48907 33.8027 5.39786 34.0281 5.3519C34.2534 5.30593 34.4858 5.30617 34.711 5.3526C34.9363 5.39902 35.1497 5.49067 35.3385 5.62199C35.5274 5.75331 35.6875 5.92158 35.8094 6.1166C35.9313 6.31163 36.0124 6.52936 36.0477 6.75661C36.083 6.98387 36.0718 7.21593 36.0149 7.43874C35.9579 7.66156 35.8563 7.87049 35.7162 8.05291C35.5762 8.23532 35.4005 8.38742 35.2 8.5Z" />
+                  </svg>
+                </a>
+              </div>
+              <div className="flex flex-col gap-5">
+                <a
+                  className="text-2xl font-semibold ml-3"
+                  href="https://www.linkedin.com/in/rizky-soeharto-aa33b0222/"
+                >
+                  LinkedIn
+                </a>
+                <a
+                  className="text-2xl font-semibold ml-3"
+                  href="mailto:soehartorizky@gmail.com"
+                >
+                  soehartorizky@gmail.com
+                </a>
+              </div>
             </div>
           </div>
         </div>

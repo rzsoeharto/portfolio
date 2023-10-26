@@ -2,53 +2,28 @@ import { useEffect, useState } from "react";
 import Logo from "../components/Logo";
 import Navbar from "../components/Navbar";
 import TitleNav from "../components/atomic/TitleNav";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import PostSection from "../components/PostSection";
-import useLogin from "../stores/useStore";
+import useLogin, { modalStorage } from "../stores/useStore";
 import {
   closeToast,
   closeToastWithoutFade,
   showToast,
   toastWithoutFade,
 } from "../utils/toastUtils";
-import Cookies from "js-cookie";
+import Confimation from "../components/Confimation";
 
 function SpecificPostView() {
   const { isLoggedIn } = useLogin();
+  const { setModalType, modalState, setModalState } = modalStorage();
   const { postID } = useParams();
-  const navigate = useNavigate();
 
   const [post, setPost] = useState([]);
   const [sections, setSections] = useState([]);
 
   function handleDelete() {
-    const id = postID;
-    const acc = Cookies.get("Auth");
-    toastWithoutFade("Deleting post", "Loading");
-
-    fetch(`http://localhost:8080/delete-post`, {
-      method: "DELETE",
-      headers: {
-        Authorization: acc,
-      },
-      body: JSON.stringify({
-        ID: Number(id),
-      }),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          closeToastWithoutFade();
-          showToast("Failed to delete post", "Warning");
-          return;
-        }
-        showToast("Post deleted", "Success");
-        navigate("/posts");
-      })
-      .catch((error) => {
-        closeToastWithoutFade();
-        console.log(error);
-        showToast("Unable to connect to server", "Warning");
-      });
+    setModalType("Delete");
+    setModalState(true);
   }
 
   useEffect(() => {
@@ -69,30 +44,33 @@ function SpecificPostView() {
 
   return (
     <>
-      <Logo />
-      <div className="flex flex-row h-min">
+      {modalState ? <Confimation /> : <></>}
+      <div className="flex flex-row h-full">
         <Navbar />
-        <div className="flex flex-col w-[1080px]">
-          <div className="flex flex-row justify-between h-min">
-            <TitleNav string={post.Title} />
+        <div className="flex flex-col w-full pb-10">
+          <Logo />
+          <div className="flex flex-col w-[1080px] gap-5">
+            <div className="flex flex-row justify-between h-min">
+              <TitleNav string={post.Title} />
+            </div>
+            <div className="flex flex-col gap-2">
+              {Array.isArray(sections) &&
+                sections.map((data, index) => (
+                  <div key={index} className="flex">
+                    <PostSection sectionData={data} />
+                  </div>
+                ))}
+            </div>
             {isLoggedIn ? (
               <button
                 onClick={handleDelete}
-                className="text-2xl bg-transparent duration-200 hover:text-red-600 font-semibold"
+                className="text-xl font-semibold bg-red-600 w-1/3 h-[60px] place-self-end rounded text-white hover:text-black hover:bg-white duration-200 "
               >
                 Delete post
               </button>
             ) : (
               <></>
             )}
-          </div>
-          <div className="flex flex-col gap-2">
-            {Array.isArray(sections) &&
-              sections.map((data, index) => (
-                <div key={index} className="flex">
-                  <PostSection sectionData={data} />
-                </div>
-              ))}
           </div>
         </div>
       </div>

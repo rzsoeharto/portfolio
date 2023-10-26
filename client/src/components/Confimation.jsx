@@ -1,8 +1,15 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { modalStorage } from "../stores/useStore";
+import Cookies from "js-cookie";
+import {
+  closeToastWithoutFade,
+  showToast,
+  toastWithoutFade,
+} from "../utils/toastUtils";
 
 function Confimation() {
-  const { modalType, setModalState } = modalStorage();
+  const { postID } = useParams();
+  const { modalType, setModalType, setModalState } = modalStorage();
   const navigate = useNavigate();
 
   function confirmLeave() {
@@ -14,6 +21,38 @@ function Confimation() {
     setModalState(false);
   }
 
+  function handleDelete() {
+    const id = postID;
+    const acc = Cookies.get("Auth");
+    toastWithoutFade("Deleting post", "Loading");
+
+    fetch(`http://localhost:8080/delete-post`, {
+      method: "DELETE",
+      headers: {
+        Authorization: acc,
+      },
+      body: JSON.stringify({
+        ID: Number(id),
+      }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          closeToastWithoutFade();
+          showToast("Failed to delete post", "Warning");
+          return;
+        }
+        showToast("Post deleted", "Success");
+        setModalState(false);
+        setModalType("");
+        navigate("/posts");
+      })
+      .catch((error) => {
+        closeToastWithoutFade();
+        console.log(error);
+        showToast("Unable to connect to server", "Warning");
+      });
+  }
+
   let type;
 
   switch (modalType) {
@@ -21,19 +60,21 @@ function Confimation() {
       type = (
         <>
           <div className="flex flex-col place-content-center font-semibold justify-around w-full h-full px-6">
-            <p className="text-2xl">Delete this post?</p>
+            <p className="text-2xl">
+              Are you sure you want to delete this post?
+            </p>
             <div className="flex flex-row gap-5 place-content-end">
               <button
-                className="w-[180px] h-[50px] bg-red-500 hover:bg-white"
-                onClick{}
-              >
-                Delete
-              </button>
-              <button
-                className="w-[80px] h-[50px] bg-[#ff8e3d] hover:bg-[#FFCCA8]  duration-100"
-                onClick={}
+                className="w-[80px] h-[50px] bg-transparent text-blue-500 hover:text-blue-300 duration-300 "
+                onClick={handleClose}
               >
                 Cancel
+              </button>
+              <button
+                className="w-[180px] h-[50px] bg-red-600 text-white rounded hover:text-black hover:bg-[#e7e7e7] duration-300"
+                onClick={handleDelete}
+              >
+                Delete
               </button>
             </div>
           </div>
@@ -81,7 +122,5 @@ function Confimation() {
     </>
   );
 }
-
-
 
 export default Confimation;

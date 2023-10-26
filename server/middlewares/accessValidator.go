@@ -6,23 +6,17 @@ import (
 	logger "portfolio/server/logs"
 	"portfolio/server/models"
 	"portfolio/server/responses"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 func AccessValidator(c *gin.Context) {
-	header := c.GetHeader("Authorization")
-	if header == "" {
-		responses.Code401(c, "Missing authorization header")
-		c.Abort()
-		return
-	}
+	accessToken, cookieErr := c.Cookie("Authorization")
 
-	tokenString := strings.TrimPrefix(header, "Bearer ")
-	if tokenString == "" {
-		responses.Code401(c, "Token is invalid or expired")
+	if cookieErr != nil {
+		responses.Code401(c, "Missing authorization cookie")
+		c.Abort()
 		return
 	}
 
@@ -35,7 +29,7 @@ func AccessValidator(c *gin.Context) {
 		return
 	}
 
-	token, err := jwt.ParseWithClaims(tokenString, &models.CustomAccessClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &models.CustomAccessClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}

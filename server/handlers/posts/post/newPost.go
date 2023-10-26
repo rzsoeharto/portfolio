@@ -3,6 +3,7 @@ package newpost
 import (
 	"fmt"
 	"portfolio/server/database"
+	logger "portfolio/server/logs"
 	"portfolio/server/models"
 	"portfolio/server/responses"
 	posttx "portfolio/server/transactions/post"
@@ -25,12 +26,19 @@ func CreatePost(c *gin.Context) {
 	db := database.InitDB(c)
 
 	post.Published = time.Now()
-	post.Author = "Rizky"
+
+	// file, header, fileErr := c.Request.FormFile("file")
+
+	// if fileErr != nil {
+	// 	logger.Logger.Println("File Error: ", fileErr)
+	// 	responses.Code400(c, fmt.Sprint("%s", fileErr))
+	// 	return
+	// }
 
 	err := posttx.NewPostTx(c, db, &post)
 
 	if err != nil {
-		fmt.Println(err)
+		logger.Logger.Println(err)
 		responses.Code500(c)
 		db.Close()
 		return

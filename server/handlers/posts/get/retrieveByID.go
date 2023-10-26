@@ -17,7 +17,7 @@ func RetrievePostByID(c *gin.Context) {
 
 	id := c.Param("id")
 
-	err := db.QueryRow(c, `SELECT id, author ,title, published FROM blog_posts WHERE id = $1`, id).Scan(&blogPost.ID, &blogPost.Author, &blogPost.Title, &blogPost.Published)
+	err := db.QueryRow(c, `SELECT id, title, published FROM blog_posts WHERE id = $1`, id).Scan(&blogPost.ID, &blogPost.Title, &blogPost.Published)
 
 	if err != nil {
 		fmt.Println(err)

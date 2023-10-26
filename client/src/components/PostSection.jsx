@@ -11,12 +11,14 @@ function PostSection({ sectionData }) {
       break;
 
     case "Image":
-      sectionContent = <img src={sectionData.Content} alt="Content" />;
+      sectionContent = (
+        <img src={sectionData.Content} alt="Content" className="max-w-3xl" />
+      );
       break;
 
     case "CodeBlock":
       sectionContent = (
-        <code className="w-[800px] bg-gray-600 text-white rounded-md p-1">
+        <code className="w-full bg-gray-600 text-white rounded-md p-1">
           {sectionData.Content}
         </code>
       );

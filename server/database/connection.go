@@ -25,5 +25,4 @@ func InitDB(c *gin.Context) *pgxpool.Pool {
 	}
 
 	return pool
-
 }

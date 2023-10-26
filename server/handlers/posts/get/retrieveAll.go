@@ -17,7 +17,7 @@ func RetrieveAll(c *gin.Context) {
 
 	defer db.Close()
 
-	rows, err := db.Query(c, `SELECT id, title, author, published FROM blog_posts`)
+	rows, err := db.Query(c, `SELECT id, title, published FROM blog_posts`)
 
 	if err != nil {
 		fmt.Println(err)
@@ -34,7 +34,7 @@ func RetrieveAll(c *gin.Context) {
 			return
 		}
 
-		if err := rows.Scan(&post.ID, &post.Title, &post.Author, &post.Published); err != nil {
+		if err := rows.Scan(&post.ID, &post.Title, &post.Published); err != nil {
 			fmt.Println(err)
 			return
 		}

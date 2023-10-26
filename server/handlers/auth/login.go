@@ -82,8 +82,9 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	c.Header("Authorization", "Bearer "+acc)
-	c.Header("Refresh-Token", "Refresh "+ref)
+	c.SetSameSite(4)
+	c.SetCookie("Authorization", acc, 3600, "/", "localhost", true, true)
+	c.SetCookie("Refresh-Token", ref, 604800, "/", "localhost", true, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"username": user.Username,

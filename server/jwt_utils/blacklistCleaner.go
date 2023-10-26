@@ -12,7 +12,7 @@ import (
 
 func CleanUpTokens(c *gin.Context) {
 	fmt.Println("Cleanup Initiated")
-	ticker := time.NewTicker(24 * time.Hour)
+	ticker := time.NewTicker(30 * time.Minute)
 
 	defer ticker.Stop()
 

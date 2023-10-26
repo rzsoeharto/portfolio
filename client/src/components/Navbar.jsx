@@ -22,20 +22,25 @@ function Navbar() {
         Authorization: refresh,
       },
     }).then((res) => {
+      console.log("here 1");
       if (!res.ok) {
         closeToastWithoutFade();
         showToast("Failed to logout", "Warning");
         return;
       }
+      console.log("here 2");
       closeToast(1000);
+      localStorage.clear();
+      Cookies.remove("Ref");
+      Cookies.remove("Auth");
       navigate("/");
     });
   }
 
   return (
     <>
-      <div className="flex w-[320px] h-[600px] content-end justify-end mr-32">
-        <div className="flex flex-col gap-4 text-right h-5/6">
+      <div className="flex navbar w-1/5 h-full justify-end pt-40 pr-14 mr-20 border-r-4 border-[#FFA360] sticky">
+        <div className="flex flex-col gap-4 text-right place-items-end">
           <TitleNav isLink={true} link="/" string="Home" />
           <TitleNav isLink={true} link="/portfolio" string="Portfolio" />
           <TitleNav isLink={true} link="/posts" string="Posts" />

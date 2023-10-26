@@ -6,23 +6,22 @@ import (
 	logger "portfolio/server/logs"
 	"portfolio/server/models"
 	"portfolio/server/responses"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 func RefreshValidator(c *gin.Context) {
-	header := c.GetHeader("Authorization")
-	if header == "" {
-		responses.Code401(c, "Missing authorization header")
+	refreshToken, cookieErr := c.Cookie("Refresh-Token")
+
+	if cookieErr != nil {
+		responses.Code401(c, "Missing refresh cookie")
 		c.Abort()
 		return
 	}
 
-	tokenString := strings.TrimPrefix(header, "Refresh ")
-	if tokenString == "" {
-		responses.Code401(c, "Token is invalid or expired")
+	if refreshToken == "" {
+		responses.Code401(c, "Missing authorization token")
 		c.Abort()
 		return
 	}
@@ -36,9 +35,11 @@ func RefreshValidator(c *gin.Context) {
 		return
 	}
 
-	token, err := jwt.ParseWithClaims(tokenString, &models.CustomRefreshClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(refreshToken, &models.CustomRefreshClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodECDSA); !ok {
-			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+			errorMsg := fmt.Sprintf("Unexpected signing method: %v", token.Header["alg"])
+			logger.Logger.Printf(errorMsg)
+			return nil, fmt.Errorf(errorMsg)
 		}
 		return key, nil
 	})
@@ -67,7 +68,7 @@ func RefreshValidator(c *gin.Context) {
 		c.Abort()
 		return
 	}
-	c.Set("Refresh Token", tokenString)
+	c.Set("Refresh Token", refreshToken)
 	c.Set("Session ID", sid)
 
 	c.Next()

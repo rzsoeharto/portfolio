@@ -26,6 +26,7 @@ function LoginView() {
         localStorage.setItem("username", data.username);
         localStorage.setItem("name", data.name);
         setLoggedIn(true);
+        localStorage.setItem("loggedIn", true);
         navigate("/posts/");
       });
   }
@@ -39,7 +40,7 @@ function LoginView() {
 
   return (
     <>
-      <div className="flex flex-row">
+      <div className="flex flex-row h-full">
         <Navbar />
         <div className="flex flex-col w-full">
           <Logo />

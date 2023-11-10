@@ -1,7 +1,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { modalStorage } from "../stores/useStore";
-import Cookies from "js-cookie";
 import {
+  closeToast,
   closeToastWithoutFade,
   showToast,
   toastWithoutFade,
@@ -21,16 +21,38 @@ function Confimation() {
     setModalState(false);
   }
 
+  async function handleLogout() {
+    toastWithoutFade("Logging out", "Loading");
+    try {
+      const res = await fetch("http://localhost:8080/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        setModalState(false);
+        closeToastWithoutFade();
+        showToast("Failed to logout", "Warning");
+        return;
+      }
+
+      closeToast(1000);
+      localStorage.clear();
+      window.location.replace(window.location.origin + "/");
+    } catch (error) {
+      closeToastWithoutFade();
+      showToast("Failed to logout", "Warning");
+      return;
+    }
+    setModalState(false);
+  }
+
   function handleDelete() {
     const id = postID;
-    const acc = Cookies.get("Auth");
     toastWithoutFade("Deleting post", "Loading");
 
     fetch(`http://localhost:8080/delete-post`, {
       method: "DELETE",
-      headers: {
-        Authorization: acc,
-      },
+      credentials: "include",
       body: JSON.stringify({
         ID: Number(id),
       }),
@@ -56,6 +78,30 @@ function Confimation() {
   let type;
 
   switch (modalType) {
+    case "Logout":
+      type = (
+        <>
+          <div className="flex flex-col place-content-center font-semibold justify-around w-full h-full px-6">
+            <p className="text-2xl">Are you sure you want to log out?</p>
+            <div className="flex flex-row gap-5 place-content-end">
+              <button
+                className="w-[80px] h-[50px] bg-transparent text-blue-500 hover:text-blue-300 duration-300 "
+                onClick={handleClose}
+              >
+                Cancel
+              </button>
+              <button
+                className="w-[180px] h-[50px] bg-red-600 text-white rounded hover:text-black hover:bg-[#e7e7e7] duration-300"
+                onClick={handleLogout}
+              >
+                Log out
+              </button>
+            </div>
+          </div>
+        </>
+      );
+      break;
+
     case "Delete":
       type = (
         <>
@@ -112,12 +158,12 @@ function Confimation() {
 
   return (
     <>
-      <div className="absolute z-50 bg-white left-[37%] top-[35%] w-[500px] h-[200px] rounded-md">
+      <div className="fixed z-50 bg-white left-[37%] top-[35%] w-[500px] h-[200px] rounded-md">
         {type}
       </div>
       <div
         onClick={handleClose}
-        className="absolute z-30 bg-black w-full h-full opacity-20"
+        className="fixed z-30 bg-black w-full h-full opacity-20"
       ></div>
     </>
   );

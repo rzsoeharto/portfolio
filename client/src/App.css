@@ -1,5 +1,6 @@
 #root {
-  height: 100vh;
+  height: max-content;
+  min-height: 100vh;
 }
 
 #PostTitle::placeholder {

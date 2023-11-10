@@ -4,24 +4,23 @@ import (
 	"fmt"
 	"portfolio/server/database"
 	"portfolio/server/responses"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
 func Logout(c *gin.Context) {
 	sid := c.GetString("Session ID")
-	header := c.GetHeader("Authorization")
+	refreshToken, cookieErr := c.Cookie("Refresh-Token")
 
-	if header == "" {
-		responses.Code401(c, "Missing authorization header")
+	if cookieErr != nil {
+		responses.Code401(c, "Missing refresh cookie")
+		c.Abort()
 		return
 	}
 
-	tokenString := strings.TrimPrefix(header, "Bearer ")
-
-	if tokenString == "" {
-		responses.Code401(c, "Token is invalid or expired")
+	if refreshToken == "" {
+		responses.Code401(c, "Missing authorization token")
+		c.Abort()
 		return
 	}
 
@@ -36,7 +35,7 @@ func Logout(c *gin.Context) {
 		responses.Code500(c)
 		return
 	}
-	_, txerr1 := tx.Exec(c, `INSERT INTO blacklist (token) VALUES ($1)`, &tokenString)
+	_, txerr1 := tx.Exec(c, `INSERT INTO blacklist (token) VALUES ($1)`, refreshToken)
 
 	if err != nil {
 		fmt.Println(txerr1)
@@ -61,6 +60,10 @@ func Logout(c *gin.Context) {
 		responses.Code500(c)
 		return
 	}
+
+	c.SetSameSite(4)
+	c.SetCookie("Authorization", "", -1, "/", "localhost", true, true)
+	c.SetCookie("Refresh-Token", "", -1, "/", "localhost", true, true)
 
 	responses.Code202(c, "Logged out")
 }

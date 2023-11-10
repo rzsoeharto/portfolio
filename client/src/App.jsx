@@ -21,28 +21,31 @@ import {
 function App() {
   const { setLoggedIn } = useLogin();
 
-  function replenishToken() {
-    toastWithoutFade("Authenticating", "Loading");
+  async function replenishToken() {
+    const loggedIn = localStorage.getItem("loggedIn");
+    if (loggedIn == false || loggedIn == undefined) {
+      return;
+    }
 
-    fetch(`http://localhost:8080/replenish`, {
-      method: "POST",
-      credentials: "include",
-    })
-      .then((res) => {
-        if (!res.ok) {
-          setLoggedIn(false);
-          closeToastWithoutFade();
-          showToast("Error replenishing token", "Warning");
-          return;
-        }
-        setLoggedIn(true);
-        closeToast(1000);
-      })
-      .catch((error) => {
-        closeToastWithoutFade();
-        console.error(error);
-        showToast("Can't communicate with server", "Warning");
+    toastWithoutFade("Authenticating", "Loading");
+    try {
+      const res = await fetch(`http://localhost:8080/replenish`, {
+        method: "POST",
+        credentials: "include",
       });
+      if (!res.ok) {
+        setLoggedIn(false);
+        closeToastWithoutFade();
+        showToast("Error replenishing token", "Warning");
+        return;
+      }
+      setLoggedIn(true);
+      closeToast(1000);
+    } catch (error) {
+      console.log(error);
+      closeToastWithoutFade();
+      showToast("Can't communicate with server", "Warning");
+    }
   }
 
   useEffect(() => {

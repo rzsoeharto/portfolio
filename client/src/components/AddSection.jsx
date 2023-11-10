@@ -13,7 +13,7 @@ function AddSection({ setSectionModal, setSectionsData }) {
 
   return (
     <>
-      <div className="flex flex-row w-[684px] h-16 bg-[#d9d9d9] rounded text-xl place-content-center justify-around px-20">
+      <div className="flex flex-row w-[684px] h-[60px] bg-[#d9d9d9] rounded text-xl place-content-center justify-around px-20">
         <button
           className="bg-transparent hover:text-[#FFA360]"
           value="Paragraph"
@@ -21,6 +21,7 @@ function AddSection({ setSectionModal, setSectionsData }) {
         >
           Paragraph
         </button>
+        <div className="border-l border-zinc-500 h-1/2 self-center" />
         <button
           className="bg-transparent hover:text-[#FFA360]"
           value="Image"
@@ -28,6 +29,7 @@ function AddSection({ setSectionModal, setSectionsData }) {
         >
           Image
         </button>
+        <div className="border-l border-zinc-500 h-1/2 self-center" />
         <button
           className="bg-transparent hover:text-[#FFA360]"
           value="CodeBlock"

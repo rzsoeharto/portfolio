@@ -12,7 +12,11 @@ function PostSection({ sectionData }) {
 
     case "Image":
       sectionContent = (
-        <img src={sectionData.Content} alt="Content" className="max-w-3xl" />
+        <img
+          src={sectionData.Content}
+          alt="Content"
+          className="max-w-[1080px]"
+        />
       );
       break;
 

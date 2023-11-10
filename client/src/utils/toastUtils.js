@@ -1,17 +1,11 @@
 import { toastStorage } from "../stores/useStore";
 
-let toastTimeout;
-
 export function showToast(message, type) {
   var id = document.getElementById("toast");
   id.className = id.className.replace("hidden", "block show ");
   toastStorage.setState({ toastType: type, toastMessage: message });
 
-  if (toastTimeout) {
-    clearTimeout(toastTimeout);
-  }
-
-  toastTimeout = setTimeout(() => {
+  setTimeout(() => {
     id.className = id.className.replace("block ", "hidden show");
   }, 3000);
 }

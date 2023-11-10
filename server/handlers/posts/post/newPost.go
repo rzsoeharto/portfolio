@@ -27,14 +27,6 @@ func CreatePost(c *gin.Context) {
 
 	post.Published = time.Now()
 
-	// file, header, fileErr := c.Request.FormFile("file")
-
-	// if fileErr != nil {
-	// 	logger.Logger.Println("File Error: ", fileErr)
-	// 	responses.Code400(c, fmt.Sprint("%s", fileErr))
-	// 	return
-	// }
-
 	err := posttx.NewPostTx(c, db, &post)
 
 	if err != nil {

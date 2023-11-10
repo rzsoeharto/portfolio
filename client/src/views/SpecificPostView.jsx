@@ -21,7 +21,7 @@ function SpecificPostView() {
   const [post, setPost] = useState([]);
   const [sections, setSections] = useState([]);
 
-  function handleDelete() {
+  async function handleDelete() {
     setModalType("Delete");
     setModalState(true);
   }
@@ -45,12 +45,12 @@ function SpecificPostView() {
   return (
     <>
       {modalState ? <Confimation /> : <></>}
-      <div className="flex flex-row h-full">
+      <div className="flex flex-row min-h-fit">
         <Navbar />
         <div className="flex flex-col w-full pb-10">
           <Logo />
           <div className="flex flex-col w-[1080px] gap-5">
-            <div className="flex flex-row justify-between h-min">
+            <div className="flex flex-row justify-between">
               <TitleNav string={post.Title} />
             </div>
             <div className="flex flex-col gap-2">

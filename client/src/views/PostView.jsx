@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import TitleNav from "../components/atomic/TitleNav";
-import formatPublishedDate from "../utils/dateFormatter";
+import formatPublishedDate from "../utils/formatter";
 import { Link } from "react-router-dom";
 import Logo from "../components/Logo";
 import {
@@ -33,7 +33,7 @@ function PostView() {
 
   return (
     <>
-      <div className="flex flex-row h-full">
+      <div className="flex flex-row h-screen">
         <Navbar />
         <div className="flex flex-col w-full">
           <Logo />

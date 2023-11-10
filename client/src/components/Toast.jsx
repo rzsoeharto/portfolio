@@ -9,7 +9,7 @@ function Toast() {
   switch (toastType) {
     case "Loading":
       type = (
-        <div className="flex flex-row bg-white drop-shadow-md gap-5 w-80 h-20 place-items-center absolute bottom-[2%] left-[0%] px-5 font-semibold">
+        <div className="flex flex-row gap-5 place-items-center place-self-center">
           <Loader />
           <p className="text-lg">{toastMessage}</p>
         </div>
@@ -19,8 +19,8 @@ function Toast() {
     case "Warning":
       type = (
         <>
-          <div className="flex flex-row drop-shadow-md bg-white gap-5 w-80 h-20 place-items-center absolute bottom-[2%] left-[0%] px-5 text-red-600 font-semibold">
-            <p className="text-lg">{toastMessage}</p>
+          <div className="self-center">
+            <p className="text-lg text-red-600">{toastMessage}</p>
           </div>
         </>
       );
@@ -29,8 +29,8 @@ function Toast() {
     case "Success":
       type = (
         <>
-          <div className="flex flex-row drop-shadow-md bg-white gap-5 w-80 h-20 place-items-center absolute bottom-[2%] left-[0%] px-5 text-green-600 font-semibold">
-            <p className="text-lg">{toastMessage}</p>
+          <div className="self-center">
+            <p className="text-lg text-red-600">{toastMessage}</p>
           </div>
         </>
       );
@@ -38,7 +38,7 @@ function Toast() {
 
     default:
       type = (
-        <div className="flex flex-row bg-white drop-shadow-md gap-5 w-80 h-20 place-items-center absolute bottom-[2%] left-[0%] px-5 font-semibold">
+        <div className="">
           <p className="text-lg">{toastMessage}</p>
         </div>
       );
@@ -46,7 +46,10 @@ function Toast() {
   }
   return (
     <>
-      <div id="toast" className="hidden">
+      <div
+        id="toast"
+        className="flex bg-white absolute w-80 h-20 hidden font-semibold dropshadow-md bottom-[2%] left-[0%] px-5 place-content-center"
+      >
         {type}
       </div>
     </>

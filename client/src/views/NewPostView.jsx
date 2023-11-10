@@ -7,14 +7,16 @@ import SectionSelection from "../components/SectionSelected";
 import AddSection from "../components/AddSection";
 import useLogin, { modalStorage } from "../stores/useStore";
 import { showToast, toastWithoutFade } from "../utils/toastUtils";
+import { uploadImg } from "../utils/firebaseUpload";
 
 function NewPostView() {
   const navigate = useNavigate();
   const { isLoggedIn } = useLogin();
   const [titleData, setTitleData] = useState("");
   const [sectionsData, setSectionsData] = useState([]);
-  const { modalState, setModalState, setModalType } = modalStorage();
+  const [imageArray, setImageArray] = useState([]);
   const [sectionModal, setSectionModal] = useState(false);
+  const { modalState, setModalState, setModalType } = modalStorage();
 
   function CancelPost() {
     if (titleData == "" && sectionsData == 0) {
@@ -30,6 +32,14 @@ function NewPostView() {
   }
 
   function handleDelete(id) {
+    const data = sectionsData[id];
+    if (data.SectionType == "Image") {
+      setImageArray((state) => {
+        const updatedImgArray = [...state];
+        updatedImgArray.splice(id, 1);
+        return updatedImgArray;
+      });
+    }
     setSectionsData((state) => {
       const updatedSection = [...state];
       updatedSection.splice(id, 1);
@@ -37,51 +47,62 @@ function NewPostView() {
     });
   }
 
-  function submitPost() {
+  async function submitPost() {
     if (!isLoggedIn) {
       showToast("You are not logged in", "Warning");
       return;
     }
 
-    if (titleData == "") {
-      showToast("Title can not be empty", "Warning");
+    if (titleData === "") {
+      showToast("Title cannot be empty", "Warning");
       return;
-    } else if (sectionsData == 0) {
+    } else if (sectionsData.length === 0) {
       showToast("Content cannot be empty", "Warning");
       return;
     }
 
-    let id = toastWithoutFade("Saving", "Loading");
+    try {
+      const uploadPromises = imageArray.map((image) => uploadImg(image));
+      await Promise.all(uploadPromises);
+      showToast("Images uploaded", "Success");
+    } catch (error) {
+      showToast("Failed to upload images", "Warning");
+      console.error(error);
+      return;
+    }
 
-    fetch("http://localhost:8080/create-post", {
-      method: "POST",
-      credentials: "include",
-      body: JSON.stringify({
-        Title: titleData,
-        Sections: sectionsData,
-      }),
-    })
-      .then((res) => {
-        console.log(res);
-        if (!res.ok) {
-          showToast("Something went wrong in the backend", "Warning");
-          return;
-        }
-        id.className = id.className.replace("block ", "hidden show");
-      })
-      .catch((error) => {
-        console.error(error);
-        showToast("Unable to connect to server", "Warning");
-        return;
+    const id = toastWithoutFade("Saving", "Loading");
+
+    try {
+      const response = await fetch("http://localhost:8080/create-post", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          Title: titleData,
+          Sections: sectionsData,
+        }),
       });
+
+      if (!response.ok) {
+        showToast("Something went wrong in the backend", "Warning");
+        return;
+      }
+      id.className = id.className.replace("block ", "hidden show");
+    } catch (error) {
+      console.error("ahsvdhasvdhvashdvashdvashdv", error);
+      showToast("Unable to connect to the server", "Warning");
+    }
   }
 
   return (
     <>
       {modalState ? <Confirmation /> : <></>}
-      <div className="flex flex-row">
+      <div className="flex flex-row h-screen">
         <Navbar />
-        <div className="flex flex-col h-screen w-full">
+        <div className="flex flex-col w-full">
           <Logo />
           <div className="flex flex-col w-full gap-3 pb-10">
             <div className="flex flex-row gap-5">
@@ -108,12 +129,13 @@ function NewPostView() {
                         index={index}
                         sectionSelection={section}
                         setSectionsData={setSectionsData}
+                        setImageArray={setImageArray}
                       />
                       <button
                         onClick={() => {
                           handleDelete(index);
                         }}
-                        className="font-bold bg-transparent h-10 w-14"
+                        className="relative right-5 top-7 font-bold bg-transparent h-10 w-14"
                       >
                         X
                       </button>
@@ -138,12 +160,23 @@ function NewPostView() {
                 )}
               </div>
               <button
-                className="h-[60px] bg-[#FFA360] text-xl font-semibold hover:bg-white duration-200"
+                className="h-[60px] bg-[#FFA360] rounded text-xl font-semibold hover:bg-white duration-200"
                 onClick={submitPost}
               >
                 Submit
               </button>
-              <button className="" onClick={() => console.log(sectionsData)}>
+              <button
+                className=""
+                onClick={() =>
+                  // console.log(
+                  //   "Sections: ",
+                  //   sectionsData,
+                  //   "Images: ",
+                  //   imageArray
+                  // )
+                  console.log()
+                }
+              >
                 log the thing
               </button>
             </div>

@@ -5,7 +5,7 @@ import TitleNav from "../components/atomic/TitleNav";
 function ContactView() {
   return (
     <>
-      <div className="flex flex-row h-full">
+      <div className="flex flex-row h-screen">
         <Navbar />
         <div className="flex flex-col w-full">
           <Logo />

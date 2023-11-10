@@ -5,3 +5,7 @@ export default function formatPublishedDate(isoDate) {
   const year = date.getFullYear();
   return `${year}-${month}-${day}`;
 }
+
+export function stringFormat(inputString) {
+  return inputString.replace(/ /g, "%20");
+}

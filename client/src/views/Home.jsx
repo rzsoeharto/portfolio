@@ -5,7 +5,7 @@ import LogoImage from "../assets/Logo.png";
 function HomeView() {
   return (
     <>
-      <div className="flex flex-row w-full h-full place-content-center items-center gap-48">
+      <div className="flex flex-row w-screen h-screen place-content-center items-center gap-48">
         <div className="flex flex-col place-items-center gap-3">
           <img src={ProfilePhoto} alt="Photo of Rizky" />
           <div className="w-full pl-10">

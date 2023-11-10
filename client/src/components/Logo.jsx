@@ -6,7 +6,7 @@ function Logo() {
   const { username } = userInfo();
   return (
     <>
-      <div className="flex h-40 w-full self-end">
+      <div className="flex h-40 w-full self-end min-h-[160px]">
         <div className="flex flex-row place-content-between mr-10 w-full self-center">
           <Link to="/">
             <img src={LogoImage} alt="Logo" />

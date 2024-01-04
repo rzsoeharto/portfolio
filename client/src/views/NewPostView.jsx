@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 import SectionSelection from "../components/SectionSelected";
 import AddSection from "../components/AddSection";
 import useLogin, { modalStorage } from "../stores/useStore";
-import { showToast, toastWithoutFade } from "../utils/toastUtils";
+import { closeToast, showToast, toastWithoutFade } from "../utils/toastUtils";
 import { uploadImg } from "../utils/firebaseUpload";
 
 function NewPostView() {
@@ -67,34 +67,31 @@ function NewPostView() {
       showToast("Images uploaded", "Success");
     } catch (error) {
       showToast("Failed to upload images", "Warning");
-      console.error(error);
+      console.error("RETURNED ERROR:                    ", error);
       return;
     }
 
-    const id = toastWithoutFade("Saving", "Loading");
+    toastWithoutFade("Saving", "Loading");
 
-    try {
-      const response = await fetch("http://localhost:8080/create-post", {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          Title: titleData,
-          Sections: sectionsData,
-        }),
-      });
+    const response = await fetch("http://localhost:8080/create-post", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        Title: titleData,
+        Sections: sectionsData,
+      }),
+    });
 
-      if (!response.ok) {
-        showToast("Something went wrong in the backend", "Warning");
-        return;
-      }
-      id.className = id.className.replace("block ", "hidden show");
-    } catch (error) {
-      console.error("ahsvdhasvdhvashdvashdvashdv", error);
-      showToast("Unable to connect to the server", "Warning");
+    if (!response.ok) {
+      showToast("Something went wrong in the backend", "Warning");
+      return;
     }
+
+    closeToast(1000);
+    navigate("/posts");
   }
 
   return (

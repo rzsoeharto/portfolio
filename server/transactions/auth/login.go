@@ -21,7 +21,6 @@ func ValidatePassword(c *gin.Context, tx pgx.Tx, dbUser *models.User, user *mode
 	passErr := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(user.Password))
 
 	if passErr != nil {
-
 		return passErr
 	}
 

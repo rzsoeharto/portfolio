@@ -13,7 +13,7 @@ function Logo() {
           </Link>
           {username ? (
             <div className="place-self-center justify-self-end">
-              <p className="text-xl font-semibold">Hi, {username}</p>
+              <p className="text-xl font-semibold">Hello, {username}</p>
             </div>
           ) : (
             <></>

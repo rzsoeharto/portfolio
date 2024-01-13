@@ -46,8 +46,9 @@ func Login(c *gin.Context) {
 	passErr := transactions.ValidatePassword(c, tx, &dbUser, &user)
 
 	if passErr != nil {
-		responses.Code404(c, "Incorrect username or password")
+		responses.Code401(c, "Incorrect username or password")
 		logger.Logger.Println("Error in password validation", passErr)
+		tx.Rollback(c)
 		return
 	}
 
@@ -57,7 +58,6 @@ func Login(c *gin.Context) {
 	usernameErr := transactions.FetchUsername(c, tx, &user)
 
 	if usernameErr != nil {
-		fmt.Println("5")
 		logger.Logger.Println("Error fetching username", usernameErr)
 		responses.Code500(c)
 		return
@@ -66,7 +66,6 @@ func Login(c *gin.Context) {
 	perErr := transactions.PermissionAndSession(c, tx, sid, refID, &user)
 
 	if perErr != nil {
-		fmt.Println("6")
 		responses.Code500(c)
 		logger.Logger.Println("Error updating permisions and session", perErr)
 		tx.Rollback(c)

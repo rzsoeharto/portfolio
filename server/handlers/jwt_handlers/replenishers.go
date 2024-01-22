@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"fmt"
 	"net/http"
 	"portfolio/server/database"
 	"portfolio/server/jwt_utils"
+	logger "portfolio/server/logs"
 	"portfolio/server/responses"
 	transactions "portfolio/server/transactions/auth"
 
@@ -24,7 +24,7 @@ func ReplenishToken(c *gin.Context) {
 	txerr := transactions.ReplenishTokenTx(c, db, tokenSID, refID, newSID)
 
 	if txerr != nil {
-		fmt.Println(txerr)
+		logger.Logger.Println(txerr)
 		responses.Code500(c)
 		return
 	}

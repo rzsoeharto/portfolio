@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"fmt"
 	"portfolio/server/database"
+	logger "portfolio/server/logs"
 	"portfolio/server/models"
 	"portfolio/server/responses"
 	"portfolio/server/utils"
@@ -21,7 +21,7 @@ func Register(c *gin.Context) {
 	bindErr := c.BindJSON(&user)
 
 	if bindErr != nil {
-		fmt.Println(bindErr)
+		logger.Logger.Println(bindErr)
 		responses.Code400(c, "Incomplete fields or invalid data")
 		return
 	}
@@ -39,23 +39,21 @@ func Register(c *gin.Context) {
 	hashedPassword, err := utils.HashPassword(user.Password)
 
 	if err != nil {
-		fmt.Println(err)
+		logger.Logger.Println(err)
 		responses.Code500(c)
 		return
 	}
 
-	status, err := db.Exec(c, `INSERT INTO "users" (username, password) VALUES ($1, $2)`, &user.Username, &hashedPassword)
+	_, execErr := db.Exec(c, `INSERT INTO "users" (username, password) VALUES ($1, $2)`, &user.Username, &hashedPassword)
 
-	if err != nil {
-		fmt.Println(err)
+	if execErr != nil {
+		logger.Logger.Println(err)
 		responses.Code500(c)
 		return
 	}
 
-	fmt.Println(status)
-
 	if err != nil {
-		fmt.Println(err)
+		logger.Logger.Println(err)
 		responses.Code500(c)
 		return
 	}

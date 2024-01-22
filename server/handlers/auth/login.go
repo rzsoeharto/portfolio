@@ -22,24 +22,25 @@ func Login(c *gin.Context) {
 
 	defer db.Close()
 
-	tx, err := db.Begin(c)
-
-	if err != nil {
-		logger.Logger.Println("Error starting transaction:", err)
-		responses.Code500(c)
-		return
-	}
-
 	bindErr := c.BindJSON(&user)
 
 	if bindErr != nil {
-		fmt.Println(bindErr)
+		logger.Logger.Fatalln(bindErr)
 		responses.Code400(c, "Incomplete fields or invalid data")
 		return
 	}
 
 	if !utils.CheckIfUserExist(c, user.Username, db) {
 		responses.Code404(c, "User does not exist")
+		return
+	}
+
+	tx, err := db.Begin(c)
+
+	if err != nil {
+		fmt.Println(err)
+		logger.Logger.Fatalln("Error starting transaction:", err)
+		responses.Code500(c)
 		return
 	}
 

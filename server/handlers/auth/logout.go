@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"fmt"
 	"portfolio/server/database"
+	logger "portfolio/server/logs"
 	"portfolio/server/responses"
 
 	"github.com/gin-gonic/gin"
@@ -31,14 +31,14 @@ func Logout(c *gin.Context) {
 	tx, err := db.Begin(c)
 
 	if err != nil {
-		fmt.Println(err)
+		logger.Logger.Fatalln(err)
 		responses.Code500(c)
 		return
 	}
 	_, txerr1 := tx.Exec(c, `INSERT INTO blacklist (token) VALUES ($1)`, refreshToken)
 
 	if err != nil {
-		fmt.Println(txerr1)
+		logger.Logger.Fatalln(txerr1)
 		tx.Rollback(c)
 		responses.Code500(c)
 		return
@@ -48,7 +48,7 @@ func Logout(c *gin.Context) {
 
 	if txerr2 != nil {
 		tx.Rollback(c)
-		fmt.Println(txerr1)
+		logger.Logger.Fatalln(txerr1)
 		responses.Code500(c)
 		return
 	}
@@ -56,8 +56,9 @@ func Logout(c *gin.Context) {
 	commitErr := tx.Commit(c)
 
 	if commitErr != nil {
-		fmt.Println(commitErr)
+		logger.Logger.Fatalln(commitErr)
 		responses.Code500(c)
+		tx.Rollback(c)
 		return
 	}
 

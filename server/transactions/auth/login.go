@@ -14,7 +14,6 @@ func ValidatePassword(c *gin.Context, tx pgx.Tx, dbUser *models.User, user *mode
 	scanErr := row.Scan(&dbUser.Password)
 
 	if scanErr != nil {
-
 		return scanErr
 	}
 
